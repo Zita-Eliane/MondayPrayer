@@ -1,22 +1,21 @@
 FROM php:8.2-cli
 
-# Install system dependencies including libpq-dev for PostgreSQL
 RUN apt-get update && apt-get install -y \
     git curl zip unzip \
     libzip-dev libpng-dev libonig-dev libxml2-dev \
     libpq-dev \
-    nodejs npm \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
     && docker-php-ext-install pdo pdo_pgsql zip mbstring exif pcntl bcmath gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 RUN npm install && npm run build
 
