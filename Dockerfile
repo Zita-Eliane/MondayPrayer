@@ -15,7 +15,9 @@ WORKDIR /var/www
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+RUN composer install --no-dev --no-scripts --ignore-platform-reqs
+
+RUN composer dump-autoload --no-scripts --ignore-platform-reqs
 
 RUN npm install && npm run build
 
