@@ -17,8 +17,6 @@ COPY . .
 
 RUN composer install --no-dev --no-scripts --ignore-platform-reqs
 
-RUN composer dump-autoload --no-scripts --ignore-platform-reqs
-
 RUN npm install && npm run build
 
 RUN chmod -R 775 storage bootstrap/cache
