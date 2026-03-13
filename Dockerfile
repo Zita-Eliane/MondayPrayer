@@ -16,7 +16,7 @@ WORKDIR /var/www/html
 
 COPY --chown=www-data:www-data . .
 
-RUN php -d memory_limit=-1 /usr/bin/composer install --no-dev --no-scripts --ignore-platform-reqs -v
+# RUN php -d memory_limit=-1 /usr/bin/composer install --no-dev --no-scripts --ignore-platform-reqs -v
 
 RUN npm install && npm run build
 
