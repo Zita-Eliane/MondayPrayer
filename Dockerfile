@@ -1,21 +1,22 @@
-FROM php:8.2-cli
+FROM serversideup/php:8.2-cli
 
-RUN apt-get update && apt-get install -y \
-    git curl zip unzip \
-    libzip-dev libpng-dev libonig-dev libxml2-dev \
-    libpq-dev \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && docker-php-ext-install pdo pdo_pgsql zip mbstring exif pcntl bcmath gd \
+USER root
+
+# Install PostgreSQL support
+RUN apt-get update && apt-get install -y libpq-dev \
+    && docker-php-ext-install pdo_pgsql \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-COPY . .
+COPY --chown=www-data:www-data . .
 
-RUN composer install --no-dev --no-scripts --ignore-platform-reqs
+RUN php -d memory_limit=-1 /usr/bin/composer install --no-dev --no-scripts --ignore-platform-reqs -v
 
 RUN npm install && npm run build
 
@@ -23,4 +24,4 @@ RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 10000
 
-CMD php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan serve --host=0.0.0.0 --port=10000
+CMD php artisan migrate --force && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=10000
