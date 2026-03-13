@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" fill="none">
+  <!-- Flamme extérieure -->
+  <path d="M20 4 C20 4 10 14 10 24 C10 30 13 35 20 38 C27 35 30 30 30 24 C30 14 20 4 20 4Z"
+        fill="url(#flameGrad1)" opacity="0.9"/>
+  <!-- Flamme intérieure -->
+  <path d="M20 14 C20 14 14 20 14 26 C14 30 16.5 33 20 35 C23.5 33 26 30 26 26 C26 20 20 14 20 14Z"
+        fill="url(#flameGrad2)"/>
+  <!-- Noyau brillant -->
+  <path d="M20 22 C20 22 17 26 17 28.5 C17 30.5 18.3 32 20 32 C21.7 32 23 30.5 23 28.5 C23 26 20 22 20 22Z"
+        fill="url(#flameGrad3)"/>
+  <defs>
+    <linearGradient id="flameGrad1" x1="20" y1="4" x2="20" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#A8882E"/>
+      <stop offset="100%" stop-color="#C9A84C"/>
+    </linearGradient>
+    <linearGradient id="flameGrad2" x1="20" y1="14" x2="20" y2="35" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E8C96A"/>
+      <stop offset="100%" stop-color="#F5DFA0"/>
+    </linearGradient>
+    <linearGradient id="flameGrad3" x1="20" y1="22" x2="20" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFBE6"/>
+      <stop offset="100%" stop-color="#FFF5C0"/>
+    </linearGradient>
+  </defs>
+</svg>

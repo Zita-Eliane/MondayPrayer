@@ -1,0 +1,49 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FastController;
+use App\Http\Controllers\LeaderController;
+use App\Http\Controllers\PrayerSessionController;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\DashBoardController;
+use App\Http\Controllers\StatisticsController;
+
+Route::get('/', function () {
+    return Auth::check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
+});
+
+Route::get('/dashboard', [DashBoardController::class,'index'])
+->middleware(['auth'])
+->name('dashboard');
+
+
+Route::middleware('auth')->group(function () {
+    Route::resource('fasts', FastController::class)->except(['show']);
+    Route::resource('leaders', LeaderController::class)->except(['show']);
+
+    Route::get('/prayers', [PrayerSessionController::class, 'index'])->name('prayers.index');
+    Route::get('/prayers/create', [PrayerSessionController::class, 'create'])->name('prayers.create');
+    Route::post('/prayers', [PrayerSessionController::class, 'store'])->name('prayers.store');
+    Route::get('/prayers/{prayer}', [PrayerSessionController::class, 'show'])->name('prayers.show');
+
+    Route::post('/prayers/{prayer}/stop', [PrayerSessionController::class, 'stop'])->name('prayers.stop');
+    Route::post('/prayers/{prayer}/counter', [PrayerSessionController::class, 'updateCounter'])->name('prayers.counter');
+
+    Route::post('/prayers/{prayer}/pause', [PrayerSessionController::class, 'pause'])->name('prayers.pause');
+    Route::post('/prayers/{prayer}/resume', [PrayerSessionController::class, 'resume'])->name('prayers.resume');
+
+    Route::get('/prayers/{prayer}/edit', [PrayerSessionController::class, 'edit'])->name('prayers.edit');
+    Route::put('/prayers/{prayer}', [PrayerSessionController::class, 'update'])->name('prayers.update');
+    Route::delete('/prayers/{prayer}', [PrayerSessionController::class, 'destroy'])->name('prayers.destroy');
+
+    Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
+
+});
+
+
+require __DIR__.'/auth.php';
+
+

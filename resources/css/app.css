@@ -1,0 +1,103 @@
+@import './koinonia.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --app-bg: #070B1A;
+  --app-surface: #0B1430;
+  --app-surface-2: #0E1A3D;
+  --app-gold: #D6B36A;
+  --app-gold-2:#B8924A;
+  --app-primary:#2F6BFF;
+  --app-primary-2:#1E4ED8;
+  --app-text:#E8EEFF;
+  --app-muted:#A8B3D6;
+  --app-border: rgba(255,255,255,0.08);
+  --app-shadow: 0 0 0 1px rgba(47,107,255,0.25), 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* Fond global */
+body{
+  background: radial-gradient(1200px 600px at 50% -10%, rgba(47,107,255,0.15), transparent 60%),
+              radial-gradient(900px 500px at 20% 20%, rgba(214,179,106,0.08), transparent 55%),
+              var(--app-bg);
+  color: var(--app-text);
+}
+
+/* Cartes */
+.app-card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+  border: 1px solid var(--app-border);
+  border-radius: 18px;
+  box-shadow: var(--app-shadow);
+}
+
+/* Titres dorés */
+.app-title{
+  color: var(--app-gold);
+  letter-spacing: 0.2px;
+}
+
+/* Bouton principal */
+.btn-primary{
+  background: var(--app-primary);
+  color: white;
+  border-radius: 14px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: var(--app-shadow);
+}
+.btn-primary:hover{ background: var(--app-primary-2); }
+
+/* Bouton secondaire */
+.btn-ghost{
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--app-border);
+  color: var(--app-text);
+  border-radius: 14px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-ghost:hover{ background: rgba(255,255,255,0.08); }
+
+/* Inputs */
+.app-input, .app-select{
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--app-border);
+  color: var(--app-text);
+  border-radius: 14px;
+  padding: 10px 12px;
+  width: 100%;
+}
+.app-input::placeholder{ color: rgba(168,179,214,0.6); }
+
+/* Table */
+.app-table thead th{
+  color: var(--app-muted);
+  font-weight: 600;
+}
+.app-table tbody td{
+  border-top: 1px solid var(--app-border);
+}
+
+/* Assure la lisibilité des selects */
+.app-select, .app-input {
+  color: var(--app-text);
+}
+
+.app-select option {
+  background: var(--app-surface);
+  color: var(--app-text);
+}
+
+/* Labels par défaut si tu veux éviter de tout reclasser */
+label { color: rgba(232,238,255,0.8); }
+small, .help-text { color: rgba(232,238,255,0.6); }
+
