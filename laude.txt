@@ -2,3 +2,17 @@ uqfN8nJxBd1Wl2iJ2BbkCvqWjdBd5UBWp2Bv2hSnBBnv4DkI#e7L7AO3XHfh8kIOM0Q_mPhZ0MP5ACsC
 
 
 key generate : base64:gzx2h1rlpYX0yuqtqE/wFCZHG1/foKohc2rkxBIuRsY=
+
+
+INFORMATIONS DATABASE
+
+Internal Databse URL : postgresql://sentinelle_user:0OLWIebw56w58XdjEZSXDM3bKny5G1mH@dpg-d6pv8an5gffc73dssjsg-a/sentinelle
+External Databse URL : postgresql://sentinelle_user:0OLWIebw56w58XdjEZSXDM3bKny5G1mH@dpg-d6pv8an5gffc73dssjsg-a.oregon-postgres.render.com/sentinelle
+PSQL Command : PGPASSWORD=0OLWIebw56w58XdjEZSXDM3bKny5G1mH psql -h dpg-d6pv8an5gffc73dssjsg-a.oregon-postgres.render.com -U sentinelle_user sentinelle
+
+
+Hostname : dpg-d6pv8an5gffc73dssjsg-a
+Port : 5432
+user :
+Database : sentinelle
+Password : 0OLWIebw56w58XdjEZSXDM3bKny5G1mH
