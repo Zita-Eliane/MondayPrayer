@@ -2,6 +2,8 @@ FROM serversideup/php:8.2-cli
 
 USER root
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     curl \
@@ -18,22 +20,16 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 
 WORKDIR /var/www/html
 
-RUN chown -R www-data:www-data /var/www/html
-
 COPY --chown=www-data:www-data . .
-
-# RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-scripts \
-    --ignore-platform-reqs
+    --ignore-platform-reqs \
+    --no-interaction
 
-RUN install-php-extensions pdo_pgsql
-
-RUN npm install
-RUN npm run build
+RUN npm install && npm run build
 
 RUN chmod -R 775 storage bootstrap/cache
 
