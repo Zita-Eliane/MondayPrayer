@@ -7,6 +7,9 @@
 .koi-link:hover{color:#E8EDF8;background:rgba(79,142,247,0.12)}
 .koi-link.active{color:#C9A84C;background:rgba(201,168,76,0.1)}
 .koi-link svg{width:15px;height:15px;flex-shrink:0}
+.koi-theme-btn{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;background:#111B42;border:1px solid rgba(99,132,255,0.15);color:#E8EDF8;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;margin-left:auto}
+.koi-theme-btn:hover{border-color:rgba(201,168,76,0.3);color:#C9A84C}
+.koi-theme-btn svg{width:14px;height:14px;flex-shrink:0}
 .koi-user-btn{display:inline-flex;flex-direction:row;align-items:center;gap:8px;padding:5px 12px;border-radius:8px;background:#111B42;border:1px solid rgba(99,132,255,0.15);color:#E8EDF8;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;margin-left:auto;flex-shrink:0}
 .koi-user-btn:hover{border-color:rgba(201,168,76,0.3);color:#C9A84C}
 .koi-avatar{width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#C9A84C;flex-shrink:0;font-family:serif}
@@ -16,6 +19,19 @@
 .koi-drop-item svg{width:15px;height:15px;flex-shrink:0}
 .koi-divider{height:1px;background:rgba(99,132,255,0.1);margin:4px 6px}
 .koi-badge{background:#C9A84C;color:#1A1000;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:auto}
+
+html.light #koi-nav{background:#F7F9FF;border-bottom:1px solid rgba(30,58,138,0.12)}
+html.light .koi-logo-text{color:#8A6A1B}
+html.light .koi-link{color:#38508A}
+html.light .koi-link:hover{color:#10234D;background:rgba(47,107,255,0.08)}
+html.light .koi-link.active{color:#8A6A1B;background:rgba(201,168,76,0.16)}
+html.light .koi-theme-btn,
+html.light .koi-user-btn{background:#FFFFFF;color:#1B2D57;border-color:rgba(56,80,138,0.22)}
+html.light .koi-avatar{background:rgba(201,168,76,0.18);color:#7D5F1B;border-color:rgba(201,168,76,0.35)}
+html.light .koi-dropdown{background:#FFFFFF;border-color:rgba(56,80,138,0.2)}
+html.light .koi-drop-item{color:#38508A}
+html.light .koi-drop-item:hover{background:rgba(47,107,255,0.08);color:#10234D}
+html.light .koi-divider{background:rgba(56,80,138,0.16)}
 </style>
 
 <nav id="koi-nav">
@@ -56,6 +72,11 @@
             <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
             Statistiques
         </a>
+
+        <button id="koi-theme-toggle" type="button" class="koi-theme-btn" aria-label="Basculer le thème" title="Basculer le thème">
+            <svg id="koi-theme-icon" viewBox="0 0 20 20" fill="currentColor"></svg>
+            <span id="koi-theme-label">Mode sombre</span>
+        </button>
 
         {{-- Bouton utilisateur --}}
         <button onclick="document.getElementById('koi-menu').classList.toggle('hidden')" class="koi-user-btn">
@@ -113,4 +134,32 @@ document.addEventListener('click', function(e) {
         menu.classList.add('hidden');
     }
 });
+
+(() => {
+    const root = document.documentElement;
+    const btn = document.getElementById('koi-theme-toggle');
+    const icon = document.getElementById('koi-theme-icon');
+    const label = document.getElementById('koi-theme-label');
+
+    if (!btn || !icon || !label) return;
+
+    const sunSvg = '<path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 13a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm8-5a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zm10.657-5.657a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM7.464 13.95a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zm8.193 1.414a1 1 0 01-1.414 0l-.707-.707a1 1 0 111.414-1.414l.707.707a1 1 0 010 1.414zM7.464 6.05a1 1 0 01-1.414 0l-.707-.707A1 1 0 116.757 3.93l.707.707a1 1 0 010 1.414zM10 6a4 4 0 100 8 4 4 0 000-8z"/>';
+    const moonSvg = '<path d="M17.293 13.293a8 8 0 01-10.586-10.586 1 1 0 00-1.35-1.35A10 10 0 1018.643 14.64a1 1 0 00-1.35-1.347z"/>';
+
+    const applyThemeUi = () => {
+        const isDark = root.classList.contains('dark');
+        icon.innerHTML = isDark ? sunSvg : moonSvg;
+        label.textContent = isDark ? 'Mode clair' : 'Mode sombre';
+    };
+
+    applyThemeUi();
+
+    btn.addEventListener('click', () => {
+        const isDark = root.classList.contains('dark');
+        root.classList.toggle('dark', !isDark);
+        root.classList.toggle('light', isDark);
+        localStorage.setItem('theme', !isDark ? 'dark' : 'light');
+        applyThemeUi();
+    });
+})();
 </script>

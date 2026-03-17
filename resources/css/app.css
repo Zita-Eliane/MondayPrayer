@@ -18,12 +18,32 @@
   --app-shadow: 0 0 0 1px rgba(47,107,255,0.25), 0 10px 30px rgba(0,0,0,0.35);
 }
 
+html.light{
+  --app-bg: #F1F5FF;
+  --app-surface: #FFFFFF;
+  --app-surface-2: #F8FAFF;
+  --app-gold: #8A6A1B;
+  --app-gold-2:#A27A24;
+  --app-primary:#2F6BFF;
+  --app-primary-2:#1E4ED8;
+  --app-text:#13223F;
+  --app-muted:#4F628E;
+  --app-border: rgba(19,34,63,0.12);
+  --app-shadow: 0 0 0 1px rgba(47,107,255,0.12), 0 10px 30px rgba(21,36,70,0.08);
+}
+
 /* Fond global */
 body{
   background: radial-gradient(1200px 600px at 50% -10%, rgba(47,107,255,0.15), transparent 60%),
               radial-gradient(900px 500px at 20% 20%, rgba(214,179,106,0.08), transparent 55%),
               var(--app-bg);
   color: var(--app-text);
+}
+
+html.light body{
+  background: radial-gradient(1200px 600px at 50% -10%, rgba(47,107,255,0.12), transparent 60%),
+              radial-gradient(900px 500px at 20% 20%, rgba(201,168,76,0.10), transparent 55%),
+              var(--app-bg);
 }
 
 /* Cartes */
