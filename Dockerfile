@@ -22,9 +22,12 @@ WORKDIR /var/www/html
 
 COPY --chown=www-data:www-data . .
 
+RUN rm -rf vendor node_modules
+
 RUN composer install \
     --no-dev \
-    --optimize-autoloader \
+    --prefer-dist \
+    --no-progress \
     --no-interaction
 
 RUN npm install && npm run build
@@ -33,4 +36,4 @@ RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "php artisan migrate --force && php artisan config:cache && php artisan serve --host=0.0.0.0 --port=10000"]
+CMD ["sh", "-c", "php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
