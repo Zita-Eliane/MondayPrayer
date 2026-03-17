@@ -29,8 +29,8 @@ class SendFastingReminders extends Command
         $sent = 0;
         foreach ($users as $user) {
             // Vérifie si l'utilisateur a déjà enregistré un jeûne aujourd'hui
-            $hasFasted = Fast::where('user_id', $user->id)
-                             ->whereDate('fast_at', $today)
+            $hasFasted = Fast::where('participant_user_id', $user->id)
+                             ->whereDate('fast_date', $today)
                              ->exists();
 
             if (! $hasFasted) {

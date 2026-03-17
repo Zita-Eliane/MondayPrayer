@@ -65,7 +65,7 @@ class AdminController extends Controller
         $users = User::where('notifications_enabled', true)
                      ->where('fasting_day', $dayOfWeek)
                      ->whereDoesntHave('fasts', function ($q) use ($today) {
-                         $q->whereDate('fasted_at', $today);
+                         $q->whereDate('fast_date', $today);
                      })
                      ->get();
 
@@ -82,15 +82,15 @@ class AdminController extends Controller
         $year = request('year', now()->year);
 
         // Jeûnes par mois
-        $fastsByMonth = Fast::selectRaw("EXTRACT(MONTH FROM fasted_at) as month, COUNT(*) as total")
-            ->whereYear('fasted_at', $year)
+        $fastsByMonth = Fast::selectRaw("EXTRACT(MONTH FROM fast_date) as month, COUNT(*) as total")
+            ->whereYear('fast_date', $year)
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month');
 
         // Top jeûneurs
         $topFasters = User::withCount(['fasts' => function ($q) use ($year) {
-                $q->whereYear('fasted_at', $year);
+                $q->whereYear('fast_date', $year);
             }])
             ->orderByDesc('fasts_count')
             ->limit(10)

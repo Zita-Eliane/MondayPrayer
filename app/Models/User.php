@@ -53,7 +53,7 @@ class User extends Authenticatable
 
     public function fasts()
     {
-        return $this->hasMany(\App\Models\Fast::class, 'user_id');
+        return $this->hasMany(\App\Models\Fast::class, 'participant_user_id');
     }
 
     public function isAdmin(): bool

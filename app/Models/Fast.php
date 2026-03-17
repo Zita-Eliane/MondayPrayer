@@ -24,7 +24,7 @@ class Fast extends Model
     // Relation vers l'utilisateur qui jeûne
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'participant_user_id');
     }
 
     public function participant()
