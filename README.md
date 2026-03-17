@@ -72,3 +72,62 @@ La tâche métier planifiée est définie dans [routes/console.php](routes/conso
 - Les rappels et statistiques utilisent désormais les colonnes `fast_date` et `participant_user_id`.
 - `QUEUE_CONNECTION=sync` est recommandé pour un premier déploiement simple sans worker séparé.
 - Si vous activez une vraie file asynchrone plus tard, il faudra ajouter un worker dédié.
+
+## Incident rencontré sur Render (build Docker)
+
+### Problème observé
+
+Le build échouait pendant `composer install` dans l'image Docker avec l'erreur:
+
+`Could not scan for classes inside "/var/www/html/vendor/symfony/polyfill-php84/Resources/stubs"`
+
+### Cause probable
+
+- Le projet utilisait un fichier `dockerignore` (sans point) au lieu de `.dockerignore`.
+- En conséquence, `vendor/` local pouvait être copié dans l'image via `COPY . .`.
+- Le contenu de `vendor/` présent dans le contexte de build entrait en conflit avec la résolution Composer dans le conteneur.
+- L'option `--optimize-autoloader` pendant `composer install` rendait l'échec plus visible au moment de la génération de l'autoload optimisé.
+
+### Solution appliquée
+
+- Ajout d'un vrai fichier [.dockerignore](.dockerignore) pour exclure notamment `vendor/` et `node_modules/`.
+- Durcissement de [Dockerfile](Dockerfile):
+	- nettoyage préventif `vendor` et `node_modules` dans l'image avant installation,
+	- `composer install` avec `--prefer-dist --no-progress --no-interaction` (sans `--optimize-autoloader`),
+	- commande de démarrage alignée Render avec port dynamique `${PORT:-10000}`.
+
+### Résultat attendu
+
+Le build Docker Render doit passer de manière stable, sans dépendre d'un éventuel `vendor/` local.
+
+## Swagger (OpenAPI)
+
+Swagger est configuré avec L5-Swagger et une route API de test.
+
+### Endpoints
+
+- `GET /api/health` : endpoint de disponibilité API.
+
+### Installation locale
+
+1. Installer les dépendances Composer.
+2. Générer la configuration Swagger:
+
+```bash
+php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+```
+
+3. Générer la documentation:
+
+```bash
+php artisan l5-swagger:generate
+```
+
+4. Ouvrir l'interface:
+
+- `/api/documentation`
+
+### Notes
+
+- Les annotations globales OpenAPI sont dans `app/OpenApi/OpenApiSpec.php`.
+- L'exemple d'endpoint annoté est dans `app/Http/Controllers/Api/HealthController.php`.
