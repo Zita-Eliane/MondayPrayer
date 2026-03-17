@@ -6,7 +6,7 @@ use App\Http\Controllers\FastController;
 use App\Http\Controllers\LeaderController;
 use App\Http\Controllers\PrayerSessionController;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\DashBoardController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\NotificationController;
@@ -17,7 +17,7 @@ Route::get('/', function () {
         : redirect()->route('login');
 });
 
-Route::get('/dashboard', [DashBoardController::class, 'index'])
+Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
 
