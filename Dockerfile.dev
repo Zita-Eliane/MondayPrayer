@@ -1,0 +1,32 @@
+FROM serversideup/php:8.2-cli
+
+USER root
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    curl \
+    git \
+    unzip \
+    ca-certificates \
+    && install-php-extensions pdo_pgsql \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /var/www/html
+
+COPY --chown=www-data:www-data composer.json composer.lock package.json package-lock.json ./
+RUN composer install --no-interaction --prefer-dist \
+    && npm install
+
+COPY --chown=www-data:www-data . .
+
+RUN chmod +x docker/dev/entrypoint.sh \
+    && chmod -R 775 storage bootstrap/cache
+
+USER www-data
+
+ENTRYPOINT ["sh", "docker/dev/entrypoint.sh"]

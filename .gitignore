@@ -1,0 +1,21 @@
+.DS_Store
+
+# Local environment files
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Build and runtime artifacts
+/node_modules/
+/vendor/
+/public/build/
+/public/hot
+/storage/pail/
+/storage/logs/*.log
+
+# Test artifacts
+/.phpunit.result.cache
+
+# Docker local volumes/cache
+/.docker/

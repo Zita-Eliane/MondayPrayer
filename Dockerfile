@@ -22,16 +22,24 @@ WORKDIR /var/www/html
 
 COPY --chown=www-data:www-data . .
 
+COPY docker/prod/php-opcache.ini /usr/local/etc/php/conf.d/99-opcache.ini
+
+RUN rm -f bootstrap/cache/*.php
+
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
-    --no-scripts \
     --ignore-platform-reqs \
     --no-interaction
 
 RUN npm install && npm run build
 
-RUN chmod -R 775 storage bootstrap/cache
+RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
+
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+USER www-data
 
 EXPOSE 10000
 

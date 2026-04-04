@@ -1,0 +1,230 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: mondayprayer-db
+    profiles: ["dev", "prod"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: monday_prayer
+      POSTGRES_USER: monday_user
+      POSTGRES_PASSWORD: monday_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U monday_user -d monday_prayer"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mondayprayer-app
+    profiles: ["dev"]
+    user: "0:0"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: monday_prayer
+      DB_USERNAME: monday_user
+      DB_PASSWORD: monday_pass
+      QUEUE_CONNECTION: database
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
+    command: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mondayprayer-queue
+    profiles: ["dev"]
+    user: "0:0"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: monday_prayer
+      DB_USERNAME: monday_user
+      DB_PASSWORD: monday_pass
+      QUEUE_CONNECTION: database
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
+    command: ["php", "artisan", "queue:listen", "--tries=1"]
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mondayprayer-scheduler
+    profiles: ["dev"]
+    user: "0:0"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: monday_prayer
+      DB_USERNAME: monday_user
+      DB_PASSWORD: monday_pass
+      QUEUE_CONNECTION: database
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
+    command: ["php", "artisan", "schedule:work"]
+
+  vite:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mondayprayer-vite
+    profiles: ["dev"]
+    user: "0:0"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: monday_prayer
+      DB_USERNAME: monday_user
+      DB_PASSWORD: monday_pass
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
+
+  pail:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mondayprayer-pail
+    profiles: ["dev"]
+    user: "0:0"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: monday_prayer
+      DB_USERNAME: monday_user
+      DB_PASSWORD: monday_pass
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+      - node_modules_data:/var/www/html/node_modules
+    command: ["php", "artisan", "pail", "--timeout=0"]
+
+  app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mondayprayer-app-prod
+    profiles: ["prod"]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - path: .env.production
+        required: false
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      PHP_OPCACHE_ENABLE: "1"
+    ports:
+      - "8000:10000"
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:10000/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  queue-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mondayprayer-queue-prod
+    profiles: ["prod"]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - path: .env.production
+        required: false
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      PHP_OPCACHE_ENABLE: "1"
+    command: ["php", "artisan", "queue:work", "--tries=3", "--sleep=2", "--timeout=90"]
+
+  scheduler-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mondayprayer-scheduler-prod
+    profiles: ["prod"]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - path: .env.production
+        required: false
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      PHP_OPCACHE_ENABLE: "1"
+    command: ["php", "artisan", "schedule:work"]
+
+volumes:
+  pg_data:
+  vendor_data:
+  node_modules_data:
