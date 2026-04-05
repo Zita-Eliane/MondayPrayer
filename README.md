@@ -31,13 +31,13 @@ Application Laravel de suivi de jeûne et de prière pour une equipe (participan
 - Node.js + npm
 - Une base SQLite ou PostgreSQL
 
-### Option 1: installation en une commande
+### Option 1: installation Docker Compose (recommandee)
 
 ```bash
-composer run setup
+docker compose --profile dev run --rm setup
 ```
 
-Ce script execute automatiquement:
+Cette commande lance `composer run setup` dans le container `setup` et execute automatiquement:
 
 1. `composer install`
 2. creation de `.env` depuis `.env.example` (si absent)
@@ -46,7 +46,7 @@ Ce script execute automatiquement:
 5. `npm install`
 6. `npm run build`
 
-### Option 2: installation manuelle
+### Option 2: installation manuelle (hors Docker)
 
 ```bash
 composer install
@@ -58,26 +58,72 @@ npm install
 
 ## Demarrage en developpement
 
-Commande recommandee (tout-en-un):
+Commande recommandee (tout-en-un via Docker Compose):
 
 ```bash
-composer run dev
+docker compose --profile dev up -d --build dev scheduler
 ```
 
-Cette commande lance en parallele:
+Le service `dev` lance `composer run dev` dans Docker et demarre en parallele:
 
 - serveur Laravel
 - worker de queue (`queue:listen`)
 - logs Laravel (`pail`)
 - Vite en mode dev
 
-Alternative manuelle:
+Alternative hors Docker:
 
 ```bash
 php artisan serve
 php artisan queue:listen --tries=1
 npm run dev
 ```
+
+## Docker Compose (dev et prod)
+
+Le projet inclut un `docker-compose.yml` avec profils:
+
+- `dev`: setup, dev, scheduler, postgres
+- `legacy-dev`: app, queue, scheduler, vite, pail, postgres
+- `prod`: app-prod, queue-prod, scheduler-prod, postgres
+
+### Demarrage dev
+
+```bash
+docker compose --profile dev run --rm setup
+docker compose --profile dev up -d --build dev scheduler
+```
+
+Acces:
+
+- application: `http://localhost:8000`
+- vite client: `http://localhost:5173/@vite/client`
+
+### Demarrage prod (local)
+
+1. creer le fichier d'environnement prod:
+
+```bash
+cp .env.production.example .env.production
+```
+
+2. renseigner au minimum `APP_KEY` et `DB_PASSWORD` dans `.env.production`
+
+3. lancer la stack prod:
+
+```bash
+docker compose --profile prod up -d --build
+```
+
+### Commandes utiles
+
+```bash
+docker compose logs -f
+docker compose ps
+docker compose down
+```
+
+Note: ne pas lancer `dev` et `prod` en meme temps (conflit de port 8000).
 
 ## Base de donnees
 
@@ -172,7 +218,37 @@ Le projet contient:
 - `Dockerfile`
 - `render.yaml`
 
+Pour Render, le deploiement n'utilise pas `composer run setup` ni `composer run dev`.
+Render utilise son propre pipeline (`buildCommand` + `startCommand`) et supprime `public/hot` avant build pour forcer les assets Vite de production.
+
+Checklist rapide avant deploiement:
+
+1. `php artisan test`
+2. `npm run build`
+3. verifier les variables d'environnement de prod (`APP_KEY`, `APP_URL`, `DB_*`)
+4. verifier qu'aucun fichier local sensible n'est versionne (`.env`)
+
 Le demarrage en environnement cible applique les migrations puis lance Laravel sur le port `10000`.
+
+## Depannage rapide
+
+### Ports deja utilises
+
+Si `composer run dev` monte sur un autre port (8001/8002 ou 5174/5175), arreter les processus existants puis relancer:
+
+```bash
+p8000=$(lsof -ti tcp:8000 -sTCP:LISTEN); [ -n "$p8000" ] && kill $p8000
+p5173=$(lsof -ti tcp:5173 -sTCP:LISTEN); [ -n "$p5173" ] && kill $p5173
+composer run dev
+```
+
+### Erreur permission dans node_modules/.bin
+
+```bash
+chmod -R u+x node_modules/.bin
+npm install
+composer run dev
+```
 
 ## Structure rapide
 
