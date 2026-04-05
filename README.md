@@ -219,7 +219,7 @@ Le projet contient:
 - `render.yaml`
 
 Pour Render, le deploiement n'utilise pas `composer run setup` ni `composer run dev`.
-Render utilise son propre pipeline (`buildCommand` + `startCommand`) et supprime `public/hot` avant build pour forcer les assets Vite de production.
+Render utilise son propre pipeline (`buildCommand` + `startCommand`): le build lance l'installation Composer, la creation de `.env` si besoin, `php artisan key:generate`, `npm install` et `npm run build`, puis le demarrage lance `php artisan migrate --force` avant le serveur web.
 
 Checklist rapide avant deploiement:
 
