@@ -42,15 +42,31 @@
         </div>
     </body>
 
-    {{-- Service Worker PWA --}}
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('SW enregistré:', reg.scope))
-                    .catch(err => console.warn('SW erreur:', err));
-            });
-        }
-    </script>
+    @production
+        {{-- Service Worker PWA --}}
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(reg => console.log('SW enregistré:', reg.scope))
+                        .catch(err => console.warn('SW erreur:', err));
+                });
+            }
+        </script>
+    @else
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', async () => {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(registrations.map(registration => registration.unregister()));
+
+                    if ('caches' in window) {
+                        const cacheKeys = await caches.keys();
+                        await Promise.all(cacheKeys.map(cacheKey => caches.delete(cacheKey)));
+                    }
+                });
+            }
+        </script>
+    @endproduction
 
 </html>
