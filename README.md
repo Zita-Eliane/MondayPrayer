@@ -31,13 +31,13 @@ Application Laravel de suivi de jeûne et de prière pour une equipe (participan
 - Node.js + npm
 - Une base SQLite ou PostgreSQL
 
-### Option 1: installation Docker Compose (recommandee)
+### Option 1: installation en une commande
 
 ```bash
-docker compose --profile dev run --rm setup
+composer run setup
 ```
 
-Cette commande lance `composer run setup` dans le container `setup` et execute automatiquement:
+Ce script execute automatiquement:
 
 1. `composer install`
 2. creation de `.env` depuis `.env.example` (si absent)
@@ -46,7 +46,7 @@ Cette commande lance `composer run setup` dans le container `setup` et execute a
 5. `npm install`
 6. `npm run build`
 
-### Option 2: installation manuelle (hors Docker)
+### Option 2: installation manuelle
 
 ```bash
 composer install
@@ -58,20 +58,20 @@ npm install
 
 ## Demarrage en developpement
 
-Commande recommandee (tout-en-un via Docker Compose):
+Commande recommandee (tout-en-un):
 
 ```bash
-docker compose --profile dev up -d --build dev scheduler
+composer run dev
 ```
 
-Le service `dev` lance `composer run dev` dans Docker et demarre en parallele:
+Cette commande lance en parallele:
 
 - serveur Laravel
 - worker de queue (`queue:listen`)
 - logs Laravel (`pail`)
 - Vite en mode dev
 
-Alternative hors Docker:
+Alternative manuelle:
 
 ```bash
 php artisan serve
@@ -83,15 +83,13 @@ npm run dev
 
 Le projet inclut un `docker-compose.yml` avec profils:
 
-- `dev`: setup, dev, scheduler, postgres
-- `legacy-dev`: app, queue, scheduler, vite, pail, postgres
+- `dev`: app, queue, scheduler, vite, pail, postgres
 - `prod`: app-prod, queue-prod, scheduler-prod, postgres
 
 ### Demarrage dev
 
 ```bash
-docker compose --profile dev run --rm setup
-docker compose --profile dev up -d --build dev scheduler
+docker compose --profile dev up -d --build
 ```
 
 Acces:
@@ -218,8 +216,7 @@ Le projet contient:
 - `Dockerfile`
 - `render.yaml`
 
-Pour Render, le deploiement n'utilise pas `composer run setup` ni `composer run dev`.
-Render utilise son propre pipeline (`buildCommand` + `startCommand`): le build lance l'installation Composer, la creation de `.env` si besoin, `php artisan key:generate`, `npm install` et `npm run build`, puis le demarrage lance `php artisan migrate --force` avant le serveur web.
+Pour Render, le `buildCommand` supprime `public/hot` avant build pour forcer les assets de production Vite.
 
 Checklist rapide avant deploiement:
 

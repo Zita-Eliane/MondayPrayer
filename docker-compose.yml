@@ -18,74 +18,12 @@ services:
       timeout: 5s
       retries: 10
 
-  setup:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: mondayprayer-setup
-    profiles: ["dev"]
-    user: "0:0"
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
-      APP_URL: http://localhost:8000
-      DB_CONNECTION: pgsql
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_DATABASE: monday_prayer
-      DB_USERNAME: monday_user
-      DB_PASSWORD: monday_pass
-      QUEUE_CONNECTION: database
-      SESSION_DRIVER: database
-      CACHE_STORE: database
-    volumes:
-      - ./:/var/www/html
-      - vendor_data:/var/www/html/vendor
-      - node_modules_data:/var/www/html/node_modules
-    command: ["composer", "run", "setup"]
-
-  dev:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: mondayprayer-dev
-    profiles: ["dev"]
-    user: "0:0"
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
-      APP_URL: http://localhost:8000
-      DB_CONNECTION: pgsql
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_DATABASE: monday_prayer
-      DB_USERNAME: monday_user
-      DB_PASSWORD: monday_pass
-      QUEUE_CONNECTION: database
-      SESSION_DRIVER: database
-      CACHE_STORE: database
-    ports:
-      - "8000:8000"
-      - "5173:5173"
-    volumes:
-      - ./:/var/www/html
-      - vendor_data:/var/www/html/vendor
-      - node_modules_data:/var/www/html/node_modules
-    command: ["composer", "run", "dev"]
-
   app:
     build:
       context: .
       dockerfile: Dockerfile.dev
     container_name: mondayprayer-app
-    profiles: ["legacy-dev"]
+    profiles: ["dev"]
     user: "0:0"
     restart: unless-stopped
     depends_on:
@@ -117,7 +55,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     container_name: mondayprayer-queue
-    profiles: ["legacy-dev"]
+    profiles: ["dev"]
     user: "0:0"
     restart: unless-stopped
     depends_on:
@@ -144,7 +82,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     container_name: mondayprayer-scheduler
-    profiles: ["dev", "legacy-dev"]
+    profiles: ["dev"]
     user: "0:0"
     restart: unless-stopped
     depends_on:
@@ -171,7 +109,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     container_name: mondayprayer-vite
-    profiles: ["legacy-dev"]
+    profiles: ["dev"]
     user: "0:0"
     restart: unless-stopped
     depends_on:
@@ -199,7 +137,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     container_name: mondayprayer-pail
-    profiles: ["legacy-dev"]
+    profiles: ["dev"]
     user: "0:0"
     restart: unless-stopped
     depends_on:
